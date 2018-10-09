@@ -36,9 +36,8 @@ public class TicketEP {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getTickets() throws JsonProcessingException {
-		//Ticket dummyTicket = new Ticket(0, "moritz@baumotte.com", "test title", "test description");
 		//get tickets
-		WebTarget target = client.target("http://localhost:8080/dbconnector/rest/queries");
+		WebTarget target = client.target("http://localhost:8080/dbconnector/rest/queries/ticketing");
 		ArrayList<Ticket> tickets = target.request().accept("application/json").get().readEntity(ArrayList.class);
 		
 		return Response.status(Response.Status.OK).entity(tickets).build();
