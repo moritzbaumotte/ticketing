@@ -10,6 +10,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -36,13 +37,21 @@ public class TicketEP {
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getTickets() throws JsonProcessingException {
+	public Response getTickets(@QueryParam("user") String email) throws JsonProcessingException {
 		//get tickets
-		WebTarget target = client.target(getURL("dbconnector_ticketing"));
-				
-		ArrayList<Ticket> tickets = target.request().accept(MediaType.APPLICATION_JSON).get().readEntity(ArrayList.class);
-		
-		return Response.status(Response.Status.OK).entity(tickets).build();
+		if(email != null) {
+			WebTarget target = client.target(getURL("dbconnector_ticketing"));
+			ArrayList<Ticket> tickets = target
+					.queryParam("user", email)
+					.request()
+					.accept(MediaType.APPLICATION_JSON)
+					.get()
+					.readEntity(ArrayList.class);
+			
+			return Response.status(Response.Status.OK).entity(tickets).build();
+		}else {
+			return Response.status(Response.Status.BAD_REQUEST).build();
+		}
 	}
 	
 	@POST
