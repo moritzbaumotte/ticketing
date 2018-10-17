@@ -40,7 +40,7 @@ public class TicketEP {
 	public Response getTickets(@QueryParam("user") String email) throws JsonProcessingException {
 		//get tickets
 		if(email != null) {
-			WebTarget target = client.target(getURL("dbconnector_ticketing"));
+			WebTarget target = client.target(getURL("dbconnector_ticketing") + "/tickets");
 			ArrayList<Ticket> tickets = target
 					.queryParam("user", email)
 					.request()
@@ -82,8 +82,7 @@ public class TicketEP {
 	}
 	
 	private String getURL(String serviceName) {
-		return client.target("http://localhost:8080/servicebroker/rest/servicebroker")
-				.queryParam("name", "dbconnector_ticketing")
+		return client.target("http://localhost:8080/servicebroker/rest/servicebroker/" + serviceName)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
 				.get()
