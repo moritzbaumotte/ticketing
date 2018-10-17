@@ -21,9 +21,7 @@ import org.glassfish.jersey.client.ClientResponse;
 
 import com.baumotte.ticketing.entities.Service;
 import com.baumotte.ticketing.entities.Ticket;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Path("/tickets")
@@ -39,7 +37,7 @@ public class TicketEP {
 	@GET
 	@Path("/{user}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getTickets(@PathParam("user") String email) throws JsonProcessingException {
+	public Response getTickets(@PathParam("user") String email) {
 		//get tickets
 		if(email != null) {
 			WebTarget target = client.target(getURL("dbconnector_ticketing") + "/" + email + "/tickets");
@@ -86,7 +84,8 @@ public class TicketEP {
 	
 	@PUT
 	@Path("/{user}")
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes (MediaType.APPLICATION_JSON)
+	@Produces (MediaType.APPLICATION_JSON)
 	public Response createTicket(Ticket ticket, @PathParam("user") String email) {
 		Response r;
 		
