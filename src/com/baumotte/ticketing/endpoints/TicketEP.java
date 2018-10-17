@@ -107,6 +107,31 @@ public class TicketEP {
 		return r;
 	}
 	
+	@PUT
+	@Path("/{user}/ticket/{id}/responses")
+	@Consumes (MediaType.APPLICATION_JSON)
+	@Produces (MediaType.APPLICATION_JSON)
+	public Response createResponse(Response response, @PathParam("user") String email, @PathParam("id") int id) {
+		Response r;
+		
+		if(email != null) {
+			WebTarget target = client.target(getURL("dbconnector_ticketing") + "/" + email + "/tickets/" + id + "/responses");
+			r = Response.status(
+					target
+					.request()
+					.put(Entity.entity(
+							response, MediaType.APPLICATION_JSON
+							))
+					.readEntity(ClientResponse.class)
+					.getStatus())
+					.build();
+		}else {
+			r = Response.status(Response.Status.BAD_REQUEST).build();
+		}
+		
+		return r;
+	}
+	
 	/*
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
