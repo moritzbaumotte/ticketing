@@ -1,6 +1,8 @@
 package com.baumotte.ticketing.endpoints;
 
 import java.util.ArrayList;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -10,9 +12,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.client.ClientResponse;
 
 import com.baumotte.ticketing.entities.Service;
 import com.baumotte.ticketing.entities.Ticket;
@@ -77,16 +82,33 @@ public class TicketEP {
 		//update ticket
 		return mapper.writeValueAsString(ticket);
 	}
+	*/
 	
 	@PUT
+	@Path("/{user}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public String createTicket(String ticketJson) throws JsonParseException, JsonMappingException, IOException {
-		Ticket ticket = mapper.readValue(ticketJson, Ticket.class);
-		//create ticket
-		return "{'status': 'success'}";
+	public Response createTicket(Ticket ticket, @PathParam("user") String email) {
+		Response r;
+		
+		if(email != null) {
+			WebTarget target = client.target(getURL("dbconnector_ticketing") + "/" + email + "/tickets");
+			r = Response.status(
+					target
+					.request()
+					.put(Entity.entity(
+							ticket, MediaType.APPLICATION_JSON
+							))
+					.readEntity(ClientResponse.class)
+					.getStatus())
+					.build();
+		}else {
+			r = Response.status(Response.Status.BAD_REQUEST).build();
+		}
+		
+		return r;
 	}
 	
+	/*
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
