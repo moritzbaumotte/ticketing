@@ -82,8 +82,8 @@ public class TicketEP {
 	}
 	*/
 	
-	@PUT
-	@Path("/{user}")
+	@POST
+	@Path("/{user}/ticket")
 	@Consumes (MediaType.APPLICATION_JSON)
 	@Produces (MediaType.APPLICATION_JSON)
 	public Response createTicket(Ticket ticket, @PathParam("user") String email) {
@@ -91,15 +91,8 @@ public class TicketEP {
 		
 		if(email != null) {
 			WebTarget target = client.target(getURL("dbconnector_ticketing") + "/" + email + "/tickets");
-			r = Response.status(
-					target
-					.request()
-					.put(Entity.entity(
-							ticket, MediaType.APPLICATION_JSON
-							))
-					.readEntity(ClientResponse.class)
-					.getStatus())
-					.build();
+			int id = target.request().post(Entity.entity(ticket, MediaType.APPLICATION_JSON)).readEntity(int.class);
+			r = Response.status(Response.Status.OK).entity(id).build();
 		}else {
 			r = Response.status(Response.Status.BAD_REQUEST).build();
 		}
@@ -107,24 +100,17 @@ public class TicketEP {
 		return r;
 	}
 	
-	@PUT
+	@POST
 	@Path("/{user}/ticket/{id}/responses")
 	@Consumes (MediaType.APPLICATION_JSON)
 	@Produces (MediaType.APPLICATION_JSON)
-	public Response createResponse(Response response, @PathParam("user") String email, @PathParam("id") int id) {
+	public Response createResponse(com.baumotte.ticketing.entities.Response response, @PathParam("user") String email, @PathParam("id") int id) {
 		Response r;
 		
-		if(email != null) {
+		if(email != null && id != 0) {
 			WebTarget target = client.target(getURL("dbconnector_ticketing") + "/" + email + "/tickets/" + id + "/responses");
-			r = Response.status(
-					target
-					.request()
-					.put(Entity.entity(
-							response, MediaType.APPLICATION_JSON
-							))
-					.readEntity(ClientResponse.class)
-					.getStatus())
-					.build();
+			int respId = target.request().post(Entity.entity(response, MediaType.APPLICATION_JSON)).readEntity(int.class);
+			r = Response.status(Response.Status.OK).entity(respId).build();
 		}else {
 			r = Response.status(Response.Status.BAD_REQUEST).build();
 		}
