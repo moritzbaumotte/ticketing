@@ -6,7 +6,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -71,19 +70,8 @@ public class TicketEP {
 		}
 	}
 	
-	/*
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public String updateTicket(String ticketJson) throws JsonParseException, JsonMappingException, IOException{
-		Ticket ticket = mapper.readValue(ticketJson, Ticket.class);
-		//update ticket
-		return mapper.writeValueAsString(ticket);
-	}
-	*/
-	
-	@POST
-	@Path("/{user}/ticket")
+	@Path ("/{user}/ticket")
 	@Consumes (MediaType.APPLICATION_JSON)
 	@Produces (MediaType.APPLICATION_JSON)
 	public Response createTicket(Ticket ticket, @PathParam("user") String email) {
@@ -101,7 +89,7 @@ public class TicketEP {
 	}
 	
 	@POST
-	@Path("/{user}/ticket/{id}/responses")
+	@Path ("/{user}/ticket/{id}/responses")
 	@Consumes (MediaType.APPLICATION_JSON)
 	@Produces (MediaType.APPLICATION_JSON)
 	public Response createResponse(com.baumotte.ticketing.entities.Response response, @PathParam("user") String email, @PathParam("id") int id) {
@@ -118,16 +106,24 @@ public class TicketEP {
 		return r;
 	}
 	
-	/*
 	@DELETE
+	@Path ("/{user}/ticket/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public String deleteTicket(String ticketJson) throws JsonParseException, JsonMappingException, IOException {
-		Ticket ticket = mapper.readValue(ticketJson, Ticket.class);
-		//mark ticket as complete
-		return "{'status': 'success'}";
+	public Response deleteTicket(@PathParam("user") String email, @PathParam("id") int id) {
+		Response r = null;
+		
+		if(email != null && id != 0) {
+			WebTarget target = client.target(getURL("dbconnector_ticketing") + "/" + email + "/tickets/" + id);
+			
+			r = Response.
+					status(target.request().delete().readEntity(ClientResponse.class).getStatus())
+					.build();
+		}else {
+			r = Response.status(Response.Status.BAD_REQUEST).build();
+		}
+		
+		return r;
 	}
-	*/
 	
 	private String getURL(String serviceName) {
 		return client.target("http://localhost:8080/servicebroker/rest/servicebroker/" + serviceName)
