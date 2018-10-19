@@ -108,21 +108,12 @@ public class TicketEP {
 	
 	@DELETE
 	@Path ("/{user}/ticket/{id}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response deleteTicket(@PathParam("user") String email, @PathParam("id") int id) {
-		Response r = null;
-		
+	@Consumes (MediaType.APPLICATION_JSON)
+	public void deleteTicket(@PathParam("user") String email, @PathParam("id") int id) {
 		if(email != null && id != 0) {
 			WebTarget target = client.target(getURL("dbconnector_ticketing") + "/" + email + "/tickets/" + id);
-			
-			r = Response.
-					status(target.request().delete().readEntity(ClientResponse.class).getStatus())
-					.build();
-		}else {
-			r = Response.status(Response.Status.BAD_REQUEST).build();
+			target.request().delete();
 		}
-		
-		return r;
 	}
 	
 	private String getURL(String serviceName) {
