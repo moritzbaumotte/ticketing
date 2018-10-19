@@ -6,7 +6,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -71,19 +70,8 @@ public class TicketEP {
 		}
 	}
 	
-	/*
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public String updateTicket(String ticketJson) throws JsonParseException, JsonMappingException, IOException{
-		Ticket ticket = mapper.readValue(ticketJson, Ticket.class);
-		//update ticket
-		return mapper.writeValueAsString(ticket);
-	}
-	*/
-	
-	@PUT
-	@Path("/{user}")
+	@Path ("/{user}/ticket")
 	@Consumes (MediaType.APPLICATION_JSON)
 	@Produces (MediaType.APPLICATION_JSON)
 	public Response createTicket(Ticket ticket, @PathParam("user") String email) {
@@ -91,15 +79,8 @@ public class TicketEP {
 		
 		if(email != null) {
 			WebTarget target = client.target(getURL("dbconnector_ticketing") + "/" + email + "/tickets");
-			r = Response.status(
-					target
-					.request()
-					.put(Entity.entity(
-							ticket, MediaType.APPLICATION_JSON
-							))
-					.readEntity(ClientResponse.class)
-					.getStatus())
-					.build();
+			int id = target.request().post(Entity.entity(ticket, MediaType.APPLICATION_JSON)).readEntity(int.class);
+			r = Response.status(Response.Status.OK).entity(id).build();
 		}else {
 			r = Response.status(Response.Status.BAD_REQUEST).build();
 		}
@@ -107,24 +88,17 @@ public class TicketEP {
 		return r;
 	}
 	
-	@PUT
-	@Path("/{user}/ticket/{id}/responses")
+	@POST
+	@Path ("/{user}/ticket/{id}/responses")
 	@Consumes (MediaType.APPLICATION_JSON)
 	@Produces (MediaType.APPLICATION_JSON)
-	public Response createResponse(Response response, @PathParam("user") String email, @PathParam("id") int id) {
+	public Response createResponse(com.baumotte.ticketing.entities.Response response, @PathParam("user") String email, @PathParam("id") int id) {
 		Response r;
 		
-		if(email != null) {
+		if(email != null && id != 0) {
 			WebTarget target = client.target(getURL("dbconnector_ticketing") + "/" + email + "/tickets/" + id + "/responses");
-			r = Response.status(
-					target
-					.request()
-					.put(Entity.entity(
-							response, MediaType.APPLICATION_JSON
-							))
-					.readEntity(ClientResponse.class)
-					.getStatus())
-					.build();
+			int respId = target.request().post(Entity.entity(response, MediaType.APPLICATION_JSON)).readEntity(int.class);
+			r = Response.status(Response.Status.OK).entity(respId).build();
 		}else {
 			r = Response.status(Response.Status.BAD_REQUEST).build();
 		}
@@ -132,16 +106,15 @@ public class TicketEP {
 		return r;
 	}
 	
-	/*
 	@DELETE
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public String deleteTicket(String ticketJson) throws JsonParseException, JsonMappingException, IOException {
-		Ticket ticket = mapper.readValue(ticketJson, Ticket.class);
-		//mark ticket as complete
-		return "{'status': 'success'}";
+	@Path ("/{user}/ticket/{id}")
+	@Consumes (MediaType.APPLICATION_JSON)
+	public void deleteTicket(@PathParam("user") String email, @PathParam("id") int id) {
+		if(email != null && id != 0) {
+			WebTarget target = client.target(getURL("dbconnector_ticketing") + "/" + email + "/tickets/" + id);
+			target.request().delete();
+		}
 	}
-	*/
 	
 	private String getURL(String serviceName) {
 		return client.target("http://localhost:8080/servicebroker/rest/servicebroker/" + serviceName)
