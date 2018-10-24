@@ -1,5 +1,8 @@
 package com.baumotte.ticketing.entities;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Ticket {
 	
 	private int ticketId;
