@@ -25,11 +25,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Path("/tickets")
 public class TicketEP {
-	private final ObjectMapper mapper;
 	private final Client client;
 	
 	public TicketEP() {
-		this.mapper = new ObjectMapper();
 		this.client = ClientBuilder.newClient();
 	}
 	
@@ -117,7 +115,7 @@ public class TicketEP {
 	}
 	
 	private String getURL(String serviceName) {
-		return client.target("http://localhost:8080/servicebroker/rest/servicebroker/" + serviceName)
+		return client.target("http://localhost:8081/servicebroker/rest/servicebroker/" + serviceName)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
 				.get()

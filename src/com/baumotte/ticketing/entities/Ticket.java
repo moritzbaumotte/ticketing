@@ -1,17 +1,22 @@
 package com.baumotte.ticketing.entities;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Ticket {
 	
 	private int ticketId;
 	private String userEmail;
 	private String title;
 	private String description;
+	private int active;
 	
-	public Ticket(int ticketId, String userEmail, String title, String description) {
+	public Ticket(int ticketId, String userEmail, String title, String description, int active) {
 		this.ticketId = ticketId;
 		this.userEmail = userEmail;
 		this.title = title;
 		this.description = description;
+		this.active = active;
 	}
 	
 	public Ticket(int ticketId, String userEmail) {
@@ -53,6 +58,14 @@ public class Ticket {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public int getActive() {
+		return active;
+	}
+
+	public void setActive(int active) {
+		this.active = active;
 	}
 
 }
